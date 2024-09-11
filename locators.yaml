@@ -1,0 +1,14 @@
+xpath:
+  LOCATOR_INPUT_MODEL: //input[@id = 'input-search-field']
+  LOCATOR_SEARCH_BUTTON: //div[@class = 'header-search-button']
+  LOCATOR_BUTTON_COMPARE: //span[@class = 'btn-compare-price']
+  LOCATOR_PRODUCT_CARD: //div[@class = 'p-c-price l-container']
+  LOCATOR_FEELS_LIKE_: //div[text() = 'Ощущается как']//following::span[1]
+  LOCATOR_ICON: //div[@class = 'temp fact__temp fact__temp_size_s']//following::img[1]
+  LOCATOR_CONDITION: //div[@class = 'link__condition day-anchor i-bem']
+  LOCATOR_YESTERDAY_TEMP: //div[text() = 'Вчера в это время']//following::span[1]
+  LOCATOR_WIND_SPEED: //span[@class = 'wind-speed']
+  LOCATOR_WIND_DIR: //span[@class = 'wind-speed']//following::abbr[1]
+  LOCATOR_HUMIDITY: //div[@class = 'term term_orient_v fact__humidity']
+  LOCATOR_PRESSURE: //div[@class = 'term term_orient_v fact__pressure']
+css:
