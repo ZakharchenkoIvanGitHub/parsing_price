@@ -190,6 +190,7 @@ class OperationsHelper(BasePage):
         """
         Возвращает список карточек товара
         """
+
        # return self.find_elements(TestSearchLocators.ids["LOCATOR_PRODUCT_CARD"])
         return self.driver.find_elements(By.XPATH,"//div[@class = 'p-c-price l-container']")
 
