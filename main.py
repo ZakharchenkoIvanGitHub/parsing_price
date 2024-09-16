@@ -12,7 +12,14 @@ from search_page import OperationsHelper
 
 
 
-model = "NE63050S18JE-1070F"
+#model = "NNEAT7100HD46-2080H BULK"
+
+model_lst = ["NED47TSS19T2-1043J",
+             "NE63050S18JE-1070F",
+             "NE64060T19P1-1070D",
+             "CM8066201927306",
+             "NNEAT7100HD46-2080H BULK"]
+
 
 
 def get_random_chrome_user_agent():
@@ -71,23 +78,30 @@ if __name__ == '__main__':
     web_driver = create_driver()
     search_page = OperationsHelper(web_driver)
     search_page.go_to_site()
-    search_page.enter_model(model)
-    search_page.click_search_button()
-    time.sleep(2)
-    search_page.click_compare_button()
-    time.sleep(2)
-    cards = search_page.get_product_cards()
 
-    i=0
-    for item in cards:
-        if i:
-            price = item.find_element(By.XPATH,"//div[@class = 'p-c-price__price__link']")
+    for model in model_lst:
+        search_page.enter_model(model)
+        print(f"Поиск товара - {model}")
+        search_page.click_search_button()
+        time.sleep(2)
 
-            print(item.text)
-            print(price.text)
+
+        if search_page.compare_button_found(): # Кнопка сравнить цены
+            search_page.click_compare_button()
+            time.sleep(2)
+            name = search_page.get_name()
+            print(f"Нашел!  {name}")
+            cards = search_page.get_product_cards()
+            for item in cards:
+                price = search_page.get_price(item)
+                shop = search_page.get_shop(item)
+                print(f"{shop} - {price.text}")
             print()
-        i=1
+        elif search_page.model_not_found():
+            print(f"Товар {model} не найден/n")
 
+        else:
+            print("!!!!!!!!!!!!!!!!!!!Доработать обработку!!!!!!!!!!!!!!!!!!!!!/n")
 
 
     print("Ждемс")

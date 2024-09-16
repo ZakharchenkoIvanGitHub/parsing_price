@@ -107,27 +107,27 @@ class OperationsHelper(BasePage):
         logging.debug(f"Click to element {element_name} button")
         return True
 
-    # def get_text_from_element(self, locator, description=None):
-    #     """
-    #     Получает хранящийся в элементе текст
-    #     :param locator: локатор для поиска элемента
-    #     :param description: описание локатора
-    #     :return: True в случае успеха
-    #     """
-    #     if description:
-    #         element_name = description
-    #     else:
-    #         element_name = locator
-    #     field = self.find_element(locator, time=3)
-    #     if not field:
-    #         return None
-    #     try:
-    #         text = field.text
-    #     except:
-    #         logging.exception(f"Exception while get text from {element_name}")
-    #         return None
-    #     logging.debug(f"Find text {text} in field {element_name}")
-    #     return text
+    def get_text_from_element(self, locator, description=None):
+        """
+        Получает хранящийся в элементе текст
+        :param locator: локатор для поиска элемента
+        :param description: описание локатора
+        :return: True в случае успеха
+        """
+        if description:
+            element_name = description
+        else:
+            element_name = locator
+        field = self.find_element(locator, time=3)
+        if not field:
+            return None
+        try:
+            text = field.text
+        except:
+            logging.exception(f"Exception while get text from {element_name}")
+            return None
+        logging.debug(f"Find text {text} in field {element_name}")
+        return text
     #
     # def get_attribute_from_element(self, locator, attribute, description=None):
     #     """
@@ -175,7 +175,7 @@ class OperationsHelper(BasePage):
                           description="click_search_button")
     def click_compare_button(self):
         """
-        Кликает по кнопке поиска
+        Кликает по кнопке "Сравнить цены"
         """
         self.click_button(TestSearchLocators.ids['LOCATOR_BUTTON_COMPARE'],
                           description="click_compare_button")
@@ -191,26 +191,53 @@ class OperationsHelper(BasePage):
         Возвращает список карточек товара
         """
 
-       # return self.find_elements(TestSearchLocators.ids["LOCATOR_PRODUCT_CARD"])
-        return self.driver.find_elements(By.XPATH,"//div[@class = 'p-c-price l-container']")
+        return self.find_elements(TestSearchLocators.ids["LOCATOR_PRODUCT_CARD"])
+        #return self.driver.find_elements(By.XPATH,"//div[@class = 'p-c-price l-container']")
 
-    # def get_fact_temp(self):
-    #     """
-    #     Возвращает текущую температуру
-    #     """
-    #     return self.get_text_from_element(TestSearchLocators.ids["LOCATOR_FACT_TEMP"], description="fact_temp")
-    #
-    # def get_feels_like(self):
-    #     """
-    #     Возвращает ощущаемую температуру
-    #     """
-    #     return self.get_text_from_element(TestSearchLocators.ids["LOCATOR_FEELS_LIKE"], description="feels_like")
-    #
-    # def get_icon_src(self):
-    #     """
-    #     Возвращает адрес иконки погоды
-    #     """
-    #     return self.get_attribute_from_element(TestSearchLocators.ids["LOCATOR_ICON"], 'src', description="icon_src")
+    def get_name(self):
+        """
+        Возвращает наименование товара
+        """
+        return self.get_text_from_element(TestSearchLocators.ids["LOCATOR_NAME_PRODUCT"], description="get_name")
+
+    @staticmethod
+    def get_price(card):
+        """
+        Возвращает цену товара из карточки
+        """
+        return card.find_element(By.XPATH,TestSearchLocators.ids["LOCATOR_PRICE"][1])
+
+    @staticmethod
+    def get_shop(card):
+        """
+        Возвращает название магазина
+        """
+        return card.find_element(By.XPATH,TestSearchLocators.ids["LOCATOR_SHOP_NAME"][1]).get_attribute("title")
+
+
+
+    def model_not_found(self):
+        """
+        Возвращает TRUE если модель не нашлась
+        """
+        res = self.find_elements(TestSearchLocators.ids["LOCATOR_EMPTY_STATE"],2)
+
+        if res:
+            return True
+        else:
+            return False
+
+    def compare_button_found(self):
+        """
+        Возвращает TRUE если кнопка сравнить цены нашлась
+        """
+        res = self.find_elements(TestSearchLocators.ids["LOCATOR_BUTTON_COMPARE"],2)
+
+        if res:
+            return True
+        else:
+            return False
+
     #
     # def get_condition(self):
     #     """
