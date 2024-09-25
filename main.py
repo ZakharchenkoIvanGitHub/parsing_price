@@ -20,12 +20,13 @@ import pandas as pd
 
 #model = "NNEAT7100HD46-2080H BULK"
 
-model_lst = ["NED47TSS19T2-1043J",
-             "NE63050S18JE-1070F",
-             "NE64060T19P1-1070D",
-             "CM8066201927306",
-             "NNEAT7100HD46-2080H BULK"]
+# model_lst = ["NED47TSS19T2-1043J",
+#              "NE63050S18JE-1070F",
+#              "NE64060T19P1-1070D",
+#              "CM8066201927306",
+#              "NNEAT7100HD46-2080H BULK"]
 
+model_lst = []
 
 
 def get_random_chrome_user_agent():
@@ -79,13 +80,17 @@ def create_driver(user_id=2):
    return driver
 
 def parsing ():
+    if len(model_lst) == 0:
+        text_editor.insert("end", "Данные о моделях не загружены\n\n", "red")
+        return
+    text_editor.insert("end", f"Запускаю парсинг\n", "green")
     web_driver = create_driver()
     search_page = OperationsHelper(web_driver)
     search_page.go_to_site()
 
     for model in model_lst:
         search_page.enter_model(model)
-        print(f"Поиск товара - {model}")
+        text_editor.insert("end", f"Поиск товара - {model}\n", "green")
         search_page.click_search_button()
         time.sleep(2)
 
@@ -94,18 +99,18 @@ def parsing ():
             search_page.click_compare_button()
             time.sleep(2)
             name = search_page.get_name()
-            print(f"Нашел!  {name}")
+            text_editor.insert("end", f"Нашел!  {name}\n", "green")
             cards = search_page.get_product_cards()
             for item in cards:
                 price = search_page.get_price(item)
                 shop = search_page.get_shop(item)
-                print(f"{shop} - {price.text}")
-            print()
-        elif search_page.model_not_found():
-            print(f"Товар {model} не найден/n")
+                text_editor.insert("end", f"{shop} - {price.text}\n", "black")
 
+
+        elif search_page.model_not_found():
+            text_editor.insert("end", f"Товар {model} не найден\n\n", "red")
         else:
-            print("!!!!!!!!!!!!!!!!!!!Доработать обработку!!!!!!!!!!!!!!!!!!!!!/n")
+            text_editor.insert("end", "!!!!!!!!!!!!!!!!!!!Доработать обработку!!!!!!!!!!!!!!!!!!!!!\n\n", "red")
 
 
     print("Ждемс")
@@ -115,10 +120,18 @@ def parsing ():
 
 # открываем файл в текстовое поле
 def open_file():
+    global model_lst
     filepath = filedialog.askopenfilename()
     if filepath != "":
         df_orders = pd.read_excel(filepath)
-        print(df_orders)
+        model_lst = [row[0] for i, row in df_orders.iterrows() if row[0] and isinstance(row[0], str) and not row[0] in ["SVGA","CPU","SSD","Код","DDR"] and row[0].find("https")==-1]
+        text_editor.insert("end", f"Загрузил из файла модели. {len(model_lst)} шт. \n\n", "green")
+
+
+
+
+
+
         # with open(filepath, "r") as file:
         #     text = file.read()
         #     text_editor.delete("1.0", END)
@@ -129,17 +142,29 @@ def open_file():
 if __name__ == '__main__':
     root = Tk()
     root.title("Анализ фильтров")
-    root.geometry("300x300")
+    root.geometry("1100x600")
 
-    root.grid_rowconfigure(index=0, weight=1)
-    root.grid_columnconfigure(index=0, weight=1)
-    root.grid_columnconfigure(index=1, weight=1)
+    columns = ("name")
+    tree = ttk.Treeview(columns=columns, show="headings")
+    tree.pack(anchor=NW,fill= Y,expand=True)
+    tree.heading("name", text="Имя")
+ #  tree.bind("<<TreeviewSelect>>", item_selected)
+    tree.column(width=600, column=0)
 
-    text_editor = Text()
-    text_editor.grid(column=0, columnspan=2, row=0)
+
+    text_editor = Text(font="Arial 12")
+    text_editor.place(x=600,width=500)
 
     open_button = ttk.Button(text="Открыть файл", command=open_file)
-    open_button.grid(column=0, row=1, sticky=NSEW, padx=10)
+    open_button.pack(anchor=SW)
+
+    parsing_button = ttk.Button(text="Парсить", command=parsing)
+    parsing_button.pack(anchor=SW)
+
+
+    text_editor.tag_configure("red",  foreground="red")
+    text_editor.tag_configure("black", foreground="black")
+    text_editor.tag_configure("green", foreground="green")
 
     root.mainloop()
 
